@@ -15,6 +15,11 @@ import FriendsScreen from './screens/FriendsScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import GroupDetailScreen from './screens/GroupDetailScreen';
+import CalorieLogScreen from './screens/CalorieLogScreen';
+import EditGoalsScreen from './screens/EditGoalsScreen';
+import ChooseSplitScreen from './screens/ChooseSplitScreen';
+import SplitBuilderScreen from './screens/SplitBuilderScreen';
+import AICoachScreen from './screens/AICoachScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -77,6 +82,11 @@ function RootNavigator() {
         <>
           <Stack.Screen name="Main" component={MainTabs} />
           <Stack.Screen name="GroupDetail" component={GroupDetailScreen} />
+          <Stack.Screen name="CalorieLog" component={CalorieLogScreen} />
+          <Stack.Screen name="EditGoals" component={EditGoalsScreen} />
+          <Stack.Screen name="ChooseSplit" component={ChooseSplitScreen} />
+          <Stack.Screen name="SplitBuilder" component={SplitBuilderScreen} />
+          <Stack.Screen name="AICoach" component={AICoachScreen} />
         </>
       ) : (
         <Stack.Screen name="Login" component={LoginScreen} />

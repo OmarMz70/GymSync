@@ -3,16 +3,13 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, Alert 
 import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 
-const splits = ['PPL', 'Upper/Lower', 'Bro Split', 'Full Body', 'Arnold Split', '5/3/1', 'Custom'];
-
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }) {
   const { theme } = useTheme();
   const styles = makeStyles(theme);
   const { profile, logout, updateProfile } = useAuth();
 
   const [name, setName] = useState('');
   const [gym, setGym] = useState('');
-  const [split, setSplit] = useState('PPL');
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -20,14 +17,18 @@ export default function ProfileScreen() {
     if (profile) {
       setName(profile.name || '');
       setGym(profile.gym || '');
-      setSplit(profile.split || 'PPL');
     }
   }, [profile]);
+
+  // split is either the new array of day objects or a legacy string like 'PPL'
+  const splitDisplay = Array.isArray(profile?.split)
+    ? (profile.split.length > 0 ? profile.split.map(d => d.name).join(' · ') : 'Not set')
+    : (profile?.split || 'Not set');
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateProfile({ name: name.trim(), gym: gym.trim(), split });
+      await updateProfile({ name: name.trim(), gym: gym.trim() });
       setEditing(false);
     } catch {
       Alert.alert('Error', 'Could not save profile. Try again.');
@@ -66,19 +67,11 @@ export default function ProfileScreen() {
           <Text style={styles.profileValue}>{gym || '—'}</Text>
         )}
         <Text style={[styles.profileLabel, { marginTop: 16 }]}>Current Split</Text>
-        <Text style={styles.profileValue}>{split}</Text>
+        <Text style={styles.profileValue}>{splitDisplay}</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('ChooseSplit')}>
+          <Text style={styles.manageSplitText}>Manage Split →</Text>
+        </TouchableOpacity>
       </View>
-
-      {editing && (
-        <View style={styles.splitGrid}>
-          <Text style={styles.splitLabel}>Choose your split:</Text>
-          {splits.map(s => (
-            <TouchableOpacity key={s} style={[styles.splitOption, split === s && styles.splitOptionActive]} onPress={() => setSplit(s)}>
-              <Text style={[styles.splitOptionText, split === s && styles.splitOptionTextActive]}>{s}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      )}
 
       <TouchableOpacity
         style={[styles.editButton, saving && styles.editButtonDisabled]}
@@ -92,7 +85,6 @@ export default function ProfileScreen() {
         <TouchableOpacity style={styles.cancelButton} onPress={() => {
           setName(profile?.name || '');
           setGym(profile?.gym || '');
-          setSplit(profile?.split || 'PPL');
           setEditing(false);
         }}>
           <Text style={styles.cancelButtonText}>Cancel</Text>
@@ -120,12 +112,7 @@ function makeStyles(t) {
     profileLabel: { color: t.text, fontSize: 14, fontWeight: 'bold', marginBottom: 4 },
     profileValue: { color: t.subtext, fontSize: 13 },
     profileInputFull: { color: t.text, fontSize: 15, backgroundColor: t.inputBg, borderRadius: 8, padding: 10, marginTop: 4, borderWidth: 0.5, borderColor: t.border },
-    splitGrid: { backgroundColor: t.card, borderRadius: 12, padding: 16, marginBottom: 16, borderWidth: 0.5, borderColor: t.border },
-    splitLabel: { color: t.subtext, fontSize: 13, marginBottom: 12 },
-    splitOption: { padding: 12, borderRadius: 8, borderWidth: 0.5, borderColor: t.border, marginBottom: 8 },
-    splitOptionActive: { borderColor: t.accent, backgroundColor: t.accent + '22' },
-    splitOptionText: { color: t.subtext, fontSize: 14 },
-    splitOptionTextActive: { color: t.accentLight, fontWeight: 'bold' },
+    manageSplitText: { color: t.accentLight, fontSize: 13, marginTop: 8, fontWeight: '600' },
     editButton: { backgroundColor: t.accent, borderRadius: 12, padding: 16, alignItems: 'center', marginBottom: 12 },
     editButtonDisabled: { opacity: 0.6 },
     editButtonText: { color: '#ffffff', fontWeight: 'bold', fontSize: 16 },

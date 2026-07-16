@@ -50,6 +50,7 @@ export function WorkoutProvider({ children }) {
       name,
       workout,
       exercises,
+      userId: auth.currentUser?.uid || null,
       createdAt: serverTimestamp(),
     });
 
