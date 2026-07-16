@@ -115,7 +115,6 @@ export default function AICoachScreen({ navigation }) {
         ctx = await gatherUserContext();
         contextRef.current = ctx;
       }
-      // Anthropic format, skipping the opening greeting (index 0) — that's UI only
       const apiMessages = nextMessages.slice(1).map(m => ({ role: m.role, content: m.text }));
 
       const apiKey = process.env.EXPO_PUBLIC_ANTHROPIC_API_KEY
